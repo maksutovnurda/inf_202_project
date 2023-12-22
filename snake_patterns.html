@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2, viewport-fit=cover">
+	<title>Document</title>
+	<script>
+		function setCookie(name,value,days) {
+		    var expires = "";
+		    if (days) {
+		        var date = new Date();
+		        date.setTime(date.getTime() + (days*24*60*60*1000));
+		        expires = "; expires=" + date.toUTCString();
+		    }
+		    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+		}
+		function getCookie(name) {
+		    var nameEQ = name + "=";
+		    var ca = document.cookie.split(';');
+		    for(var i=0;i < ca.length;i++) {
+		        var c = ca[i];
+		        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+		    }
+		    return null;
+		}
+	</script>
+	<style>
+		@font-face {
+		    font-family: 'pixel';
+		    src: url('StarseedPro.ttf');
+		}
+		* {
+			padding: 0;
+			margin: 0;
+			text-decoration: none;
+			border: none;
+			outline: none;
+		}
+		body {
+			padding-top: 50px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			background-color: #0c0f14;
+		}
+		.table {
+			width: 500px;
+		}
+		.columns {
+			display: flex;
+		}
+		.rows {
+			position: relative;
+			width: 100%;
+			aspect-ratio: 1;
+			background-color: rgba(255, 255, 255, 0.04); /* #1e242c; */
+			margin: 1.5px;
+			display: table-cell;
+			vertical-align: middle;
+			text-align: center;
+			border-radius: 5px;
+			font-size: 20px;
+			font-family: pixel;
+			font-weight: bold;
+			color: darkorange;
+		}
+		.rows::before,
+		.rows::after {
+		    content: "";
+		    position: absolute;
+		    width: 5px; /* Adjust the width of the rectangles as needed */
+		    height: 15px; /* Adjust the height of the rectangles as needed */
+		    background-color: rgba(255, 255, 255, 0.04);
+		}
+		.rows::before {
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		}
+		.rows::after {
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%) rotate(90deg);
+		}	
+		.apple {
+			background: radial-gradient(#FFA516 0%, #D9821B 100%);
+			border-radius: 50%;
+		}
+		.fill {
+			background: linear-gradient(90deg, rgba(63,204,104,1) 0%, rgba(89,200,165,1) 100%);
+		}
+		.fill_head {
+			background: linear-gradient(90deg, rgba(63,204,104,1) 0%, rgba(89,200,165,1) 100%);
+		}
+		.top {
+			border-radius: 80% 80% 20% 20%;
+		}
+		.bottom {
+			border-radius: 20% 20% 80% 80%;
+		}
+		.left {
+			border-radius: 80% 20% 20% 80%;
+		}
+		.right {
+			border-radius: 20% 80% 80% 20%;
+		}
+		.score {
+			color: white;
+			font-size: 40px;
+			font-family: pixel;
+		}
+		.score_number {
+			color: darkorange;
+		}
+		.record {
+			font-family: pixel;
+			color: white;
+			margin-bottom: 20px;
+		}
+		.restart {
+			position: fixed;
+			background-color: rgba(0, 0, 0, 0.5);
+			padding: 30px 10px;
+			z-index: 1000;
+			padding: 30px 50px;
+			border-radius: 20px;
+			display: none;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+		.restart svg {
+			width: 100px;
+			fill: orange;
+		}
+		.restart p {
+			font-family: pixel;
+			font-size: 36px;
+			color: white;
+		}
+		.restart span {
+			cursor: pointer;
+			font-family: pixel;
+			font-size: 13px;
+			color: white;
+		}
+		.restart span:hover {
+			text-decoration: underline;
+		}
+		.controller {
+			display: none;
+			position: absolute;
+			bottom: 30px;
+			display: flex;
+		}
+		.button {
+			width: calc(100vw / 3);
+			height: calc(100vh / 3);
+			display: inline-block;
+			opacity: 0;
+		}	
+		@media screen and (max-width: 700px) {
+			.controller {
+				display: block;
+			}
+			body {
+				padding-top: 5px;
+			}
+			.table {
+				width: 95%;
+			}
+			.rows::after {
+			    content: "";
+			    position: absolute;
+			    width: 4px;
+			    height: 12px;
+			}
+		}
+	</style>
+
+</head>
+<body>
+	<div class="restart" id="restart">
+		<svg version="1.1" id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+			 viewBox="0 0 1080 1080" style="enable-background:new 0 0 1080 1080;" xml:space="preserve">
+			<g>
+				<path d="M589.67,1030.22c-33.69,0-64.41,0-97.54,0c0-31.24,0-61.98,0-96.57c-31.41,0-60.63-0.7-89.72,0.82
+					c-3.89,0.2-9.99,11.48-10.28,17.86c-1.18,25.49-0.49,51.06-0.49,77.88c-32.81,0-62.88,0-95.93,0c0-63.73,0-127.69,0-194.59
+					c-66.78,0-130.72,0-197.69,0c0-66.92,0-130.9,0-197.9c-34.43,0-65.87,0-98.04,0c0-99.1,0-195.13,0-293.42c31.79,0,62.56,0,96.79,0
+					c0-66.78,0-131.41,0-198.25c34.22,0,64.99,0,98.02,0c0-32.93,0-63.68,0-96.29c230.69,0,459.09,0,689.81,0c0,31.09,0,61.85,0,95.71
+					c33.49,0,64.79,0,98.66,0c0,67.19,0,131.24,0,197.38c33.38,0,64.18,0,96.72,0c0,98.74,0,195.35,0,295.01c-31.56,0-62.97,0-96.57,0
+					c0,66.46,0,129.92,0,196.17c-66.2,0-130.22,0-196.94,0c0,66.74,0,130.72,0,196.08c-33.38,0-64,0-97.14,0c0-31.77,0-62.48,0-94.88
+					c-33.85,0-65.25,0-99.66,0C589.67,966.27,589.67,997.63,589.67,1030.22z M393.43,638.33c0-33.12,0-64.47,0-98.84
+					c34.36,0,65.64,0,96.41,0c0-67.19,0-131.21,0-195.44c-66.13,0-130.66,0-197.34,0c0,32.58,0,63.35,0,96.81c-33.5,0-64.9,0-96.09,0
+					c0,67.37,0,131.95,0,197.47C261.73,638.33,325.17,638.33,393.43,638.33z M884.8,439.67c-33.52,0-64.24,0-97.86,0
+					c0-33.5,0-64.85,0-96.15c-66.98,0-131,0-196.08,0c0,65.82,0,130.33,0,197.17c32.35,0,63.03,0,96.69,0c0,33.6,0,64.94,0,96.73
+					c67.6,0,132.15,0,197.25,0C884.8,571.5,884.8,507.47,884.8,439.67z M588.59,834.56c0-33.95,0-65.29,0-97.1
+					c-33.22,0-64.59,0-97.04,0c0,32.94,0,64.32,0,97.1C524.29,834.56,555.67,834.56,588.59,834.56z"/>
+			</g>
+		</svg>
+		<p>Game Over</p>
+		<span onclick="restart()">click to restart</span>
+	</div>
+	<p class="score">Score: <span class="score_number" id="score">0</span></p>
+	<p class="record">Your best score: <span class="score_number" id="record">0</span></p>
+	<div class="table">
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+		<div class="columns">
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+			<div class="rows"></div>
+		</div>
+	</div>
+	<script>
+		class Segment {
+		  constructor(x, y) {
+		    this.x = x;
+		    this.y = y;
+		  }
+		}
+		class Snake {
+		    constructor() {
+		    	this.canChangeDir = true;
+		        this.segments = [new Segment(2, 0), new Segment(-1, -1), new Segment(-1, -1)];
+		    }
+
+		    addSegment() {
+		        this.segments.push(new Segment(-1, -1));
+		    }
+		    isInBody() { // it will check if there duplciates in snake segments, to check if snake run into itself
+			    const visited = {};
+			    for (const coord of this.segments) {
+			        const key = coord.x+","+coord.y;
+			        if (visited[key] && key != "-1,-1") {
+			             return true; 
+			        }
+			        visited[key] = true;
+			    }
+			    return false; 
+			}
+
+		    move() {
+		        for (var i = this.segments.length - 1; i >= 0; i--) {
+					if(i === 0) {
+						if (game.direction == 6) {
+							this.segments[i].y++;
+						} else if( game.direction == 8) {
+							this.segments[i].x--;
+						}  else if( game.direction == 4) {
+							this.segments[i].y--;
+						}  else if( game.direction == 2) {
+							this.segments[i].x++;
+						}
+					} else {
+						this.segments[i].x = this.segments[i-1].x
+						this.segments[i].y = this.segments[i-1].y
+					}
+				}
+				// Enable doubleClick preventer
+				this.canChangeDir = true;
+
+				// if snakes head exceed gameboard, it will appear in opposite side
+				if (this.segments[0].y > game.gameBoard.size-1) this.segments[0].y = 0;
+				if (this.segments[0].x > game.gameBoard.size-1) this.segments[0].x = 0;
+				if (this.segments[0].y < 0) this.segments[0].y = game.gameBoard.size-1;
+				if (this.segments[0].x < 0) this.segments[0].x = game.gameBoard.size-1;
+
+				// when eat apple, remove apple coordinates, append score, print new score, add new segment to snake
+				if (this.segments[0].x == game.apple.segments.x && this.segments[0].y == game.apple.segments.y) {
+					game.apple.removeApple();
+					game.apple.randomApple();
+					game.scoreBoard.currentScore++;
+					game.scoreBoard.update();
+					this.addSegment()
+					game.start();
+				}
+				if (this.isInBody()) game.gameOver();
+		    }
+		}
+		class Apple {
+		    constructor() {
+		        this.segments = new Segment(-1, -1);
+		    }
+		    removeApple() {
+		        this.segments = new Segment(-1, -1);
+		    }
+		    randomApple() { // it will define apple's coordinates, so it mustn't be on snakes body
+				if (this.segments.x != -1 && this.segments.y != -1) return true;
+			    while (true) {
+			        const x = Math.floor(Math.random() * game.gameBoard.size);
+			        const y = Math.floor(Math.random() * game.gameBoard.size);
+			        
+			        const isAppleOnSnake = game.snake.segments.some((segment) => segment.x === x && segment.y === y);
+			        if (!isAppleOnSnake) {
+			            this.segments = new Segment(x, y);
+			            break;
+			        }
+			    }
+			}
+
+		}
+
+		class Scoreboard {
+		    constructor() {
+		        this.currentScore = 0;
+		        this.bestScore = this.getBestScore();
+		    }
+
+		    update() {
+		        this.checkAndUpdateBestScore();
+		        this.updateDisplay();
+		    }
+
+		    updateDisplay() {
+		        // Update the score display on the webpage
+		        document.getElementById('score').innerHTML = this.currentScore;
+		        document.getElementById('record').innerHTML = this.bestScore;
+		    }
+
+		    checkAndUpdateBestScore() {
+		        if (this.currentScore > this.bestScore) {
+		        	console.log("more")
+		            this.bestScore = this.currentScore;
+		            this.setBestScore(this.bestScore);
+		        }
+		    }
+		    getBestScore() {
+		        return getCookie("record") === null ? 0 : parseInt(getCookie("record"), 10);
+		    }
+
+		    setBestScore(score) {
+		        setCookie("record", score, 365);
+		    }
+		}
+
+		class GameBoard {
+		    constructor() {
+		        this.rows = document.getElementsByClassName('rows');
+		        this.size = 20;
+		    }
+
+		    clearTable() {
+		        for (let i = 0, ilen = this.rows.length; i < ilen; i++) {
+		            this.rows[i].className = 'rows';
+		        }
+		    }
+
+		    printSnake(snake) {
+		        this.clearTable()
+				
+				for (var i = snake.segments.length - 1; i >= 0; i--) {
+					if (snake.segments[i].x < 0) continue;
+					this.index = (snake.segments[i].x)*this.size+snake.segments[i].y
+					this.rows[this.index].classList.add(i == 0 ? "fill_head" : "fill");
+				}
+		    }
+
+		    printApple(apple) {
+				this.rows[(apple.segments.x)*this.size+apple.segments.y].classList.add("apple");
+		    }
+
+		    // Other methods related to the game board
+		}
+		class Game {
+		    constructor() {
+		        if (!Game.instance) {
+		            this.init();
+		            Game.instance = this;
+		        }
+		        return Game.instance;
+		    }
+
+		    init() {
+		        // Initialize game variables
+		        this.gameBoard = new GameBoard();
+		        this.scoreBoard = new (Scoreboard);
+		        this.direction = 6;
+		        this.speed = 150;
+		        this.gameGoing = true;
+		        this.snake = new Snake();
+		        this.apple = new Apple();
+
+		        this.intervalId = 1;
+		        this.start();
+		    }
+
+			start() {
+			    if (this.intervalId) {
+			        clearInterval(this.intervalId);
+			    }
+
+			    this.intervalId = setInterval(() => { // Use arrow function here
+			        if (!this.gameGoing) {
+			            // this.gameBoard.clearTable();
+			            return;
+			        }
+			        this.snake.move();
+			        this.gameBoard.printSnake(this.snake);
+			        this.apple.randomApple();
+			        this.gameBoard.printApple(this.apple);
+			        this.scoreBoard.update(this); // Pass 'this' if the update method needs game state
+			    }, this.speed);
+			}
+			gameOver() {
+				document.getElementById('restart').style.display = "flex";
+				this.gameGoing = false;
+			}
+
+
+		    // Additional methods like gameOver, restart, etc.
+
+		    static getInstance() {
+		        if (!this.instance) {
+		            this.instance = new Game();
+		        }
+		        return this.instance;
+		    }
+		}
+
+		const game = Game.getInstance();
+
+		document.onkeydown = checkKey;
+		function checkKey(e) {
+			// it will change the direction of snake
+			if (game.snake.canChangeDir) {
+				e = e.keyCode || window.event.keyCode;
+			    if (e == '38') { // direction to up
+			        game.direction = game.direction==2 ? 2 : 8;
+			    }
+			    else if (e == '40') { // set direction to bottom
+			        game.direction = game.direction==8 ? 8 : 2;
+			    }
+			    else if (e == '37') { // set direction to left
+			    	game.direction = game.direction==6 ? 6 : 4;
+			    }
+			    else if (e == '39') { // set direction to right
+			    	game.direction = game.direction==4 ? 4 : 6;
+			    }
+			}
+		    game.snake.canChangeDir = false
+		}
+		function restart() { // restarts the game
+			document.getElementById('restart').style.display = "none";
+			game.gameGoing = true;
+			game.init();
+		}
+
+
+	</script>
+	
+</body>
+</html>
